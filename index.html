@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Генератор (Надійний)</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: 0 auto; text-align: center; }
+        input, button { width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box; border-radius: 6px; font-size: 16px; }
+        input { border: 1px solid #ccc; outline: none; }
+        input:focus { border-color: #007bff; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:disabled { background-color: #6c757d; }
+        #preview { margin-top: 20px; max-width: 100%; display: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #instruction { margin-top: 15px; font-size: 15px; color: #28a745; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>QR Генератор (Швидкий)</h2>
+
+    <input type="text" id="urlInput" placeholder="Введіть посилання" />
+    <button id="generateBtn">Згенерувати</button>
+
+    <p id="instruction">✅ Готово! Затисніть картинку пальцем, щоб зберегти її.</p>
+    <img id="preview" alt="Ваш QR-код" />
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const url = document.getElementById('urlInput').value.trim();
+            const btn = document.getElementById('generateBtn');
+            const previewImg = document.getElementById('preview');
+            const instruction = document.getElementById('instruction');
+
+            if (!url) {
+                alert('Будь ласка, введіть посилання');
+                return;
+            }
+
+            // Змінюємо стан на "Генерується"
+            btn.innerText = 'Генерується...';
+            btn.disabled = true;
+            previewImg.style.display = 'none';
+            instruction.style.display = 'none';
+
+            // Використовуємо надійний зовнішній API
+            // Кодуємо посилання, щоб уникнути помилок
+            const encodedUrl = encodeURIComponent(url);
+            const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&margin=2&data=${encodedUrl}`;
+
+            // Коли картинка успішно завантажиться з сервера
+            previewImg.onload = function() {
+                btn.innerText = 'Згенерувати';
+                btn.disabled = false;
+                previewImg.style.display = 'block';
+                instruction.style.display = 'block';
+            };
+
+            // Якщо сталася помилка мережі
+            previewImg.onerror = function() {
+                alert('Помилка з\'єднання. Перевірте інтернет.');
+                btn.innerText = 'Згенерувати';
+                btn.disabled = false;
+            };
+
+            // Запускаємо завантаження
+            previewImg.src = apiUrl;
+        });
+    </script>
+
+</body>
+</html>
