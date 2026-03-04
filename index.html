@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Генератор 3000x3000 px</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #preview {
+            margin-top: 20px;
+            max-width: 100%;
+            border: 1px solid #eee;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Створення QR-коду (JPG)</h2>
+    
+    <input type="text" id="urlInput" placeholder="Введіть посилання (наприклад, https://...)" />
+    <button id="generateBtn">Згенерувати та Завантажити</button>
+
+    <img id="preview" alt="Попередній перегляд QR-коду" />
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const url = document.getElementById('urlInput').value.trim();
+            
+            if (!url) {
+                alert('Помилка: введіть посилання.');
+                return;
+            }
+
+            // Налаштування для генерації JPG розміром 3000x3000
+            const options = {
+                errorCorrectionLevel: 'H', // Високий рівень корекції помилок
+                type: 'image/jpeg',        // Формат виводу
+                width: 3000,               // Ширина та висота у пікселях
+                margin: 2,                 // Відступ навколо коду
+                color: {
+                    dark: "#000000",       // Колір самого коду (чорний)
+                    light: "#ffffff"       // Колір фону (білий)
+                }
+            };
+
+            // Генерація QR-коду у форматі Data URL
+            QRCode.toDataURL(url, options, function (err, dataUrl) {
+                if (err) {
+                    console.error(err);
+                    alert('Сталася помилка при генерації.');
+                    return;
+                }
+
+                // Відображення попереднього перегляду на сторінці (візуально зменшено через CSS)
+                const previewImg = document.getElementById('preview');
+                previewImg.src = dataUrl;
+                previewImg.style.display = 'block';
+
+                // Створення тимчасового посилання для завантаження файлу
+                const downloadLink = document.createElement('a');
+                downloadLink.href = dataUrl;
+                downloadLink.download = 'qrcode_3000x3000.jpg';
+                
+                // Програмне натискання для старту завантаження
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            });
+        });
+    </script>
+
+</body>
+</html>
